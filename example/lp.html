@@ -7,7 +7,7 @@
   </head>
   <body>
     <script>
-      const worker = new Worker('../glpk-worker.js');
+      const worker = new Worker('../dist/glpk-worker.js');
       worker.onerror = (err) => {
         console.log(err);
       };

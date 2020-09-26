@@ -1,8 +1,6 @@
-GLPK_VERSION = 4.65
-
 EMCC_FLAGS :=
-# access emcc settings through Runtime.compilerSettings or Runtime.getCompilerSetting(name)
 EMCC_FLAGS += -s RETAIN_COMPILER_SETTINGS=1
+EMCC_FLAGS += -s INITIAL_MEMORY=16MB
 EMCC_FLAGS += -s ALLOW_MEMORY_GROWTH=1
 EMCC_FLAGS += -s EXPORTED_FUNCTIONS="[ \
 	'_glp_version', \
@@ -51,36 +49,28 @@ PWD=$(shell pwd)
 
 all: glpk glpk.js glpk-worker.js
 
-getglpk:
+glpk:
 	cd $(PWD)/src/glpk && \
-	wget -nc http://ftp.gnu.org/gnu/glpk/glpk-$(GLPK_VERSION).tar.gz && \
-	tar -xf glpk-$(GLPK_VERSION).tar.gz
-
-glpk: getglpk
-	mkdir -p $(PWD)/src/glpk/glpk-$(GLPK_VERSION)/build && \
-	cd $(PWD)/src/glpk/glpk-$(GLPK_VERSION)/build && \
-	emconfigure ../configure --disable-shared && \
+	autoreconf -fi && \
+	emconfigure ./configure --disable-shared && \
 	emmake make -j4 \
 
-glpk.js: src/pre.js src/post.js src/glpk.js.c
+dist/glpk.js: src/pre.js src/post.js src/glpk.js.c
 	cd $(PWD); \
-	emcc -O3 --memory-init-file 0 $(EMCC_FLAGS) \
-	-Isrc/glpk/glpk-$(GLPK_VERSION)/src \
+	emcc -Os --memory-init-file 0 $(EMCC_FLAGS) \
+	-Isrc/glpk/src \
 	--pre-js src/pre.js --post-js src/post.js  \
-	src/glpk/glpk-$(GLPK_VERSION)/build/src/.libs/libglpk.a \
-	src/glpk.js.c -o glpk.js
+	src/glpk/src/.libs/libglpk.a \
+	src/glpk.js.c -o dist/glpk.js
 
-glpk-worker.js: src/pre.js src/post-worker.js src/glpk.js.c
+dist/glpk-worker.js: src/pre.js src/post-worker.js src/glpk.js.c
 	cd $(PWD); \
-	emcc -O3 --memory-init-file 0 $(EMCC_FLAGS) \
-	-Isrc/glpk/glpk-$(GLPK_VERSION)/src \
+	emcc -Os --memory-init-file 0 $(EMCC_FLAGS) \
+	-Isrc/glpk/src \
 	--pre-js src/pre.js --post-js src/post-worker.js  \
-	src/glpk/glpk-$(GLPK_VERSION)/build/src/.libs/libglpk.a \
-	src/glpk.js.c -o glpk-worker.js
+	src/glpk/src/.libs/libglpk.a \
+	src/glpk.js.c -o dist/glpk-worker.js
 
 clean:
-	rm -f $(PWD)/glpk.js;
-	rm -f $(PWD)/glpk.wasm;
-	rm -f $(PWD)/glpk-worker.js;
-	rm -f $(PWD)/glpk-worker.wasm;
-	rm -rf $(PWD)/src/glpk/glpk-$(GLPK_VERSION);
+	rm -fr $(PWD)/dist/*;
+	cd $(PWD)/src/glpk && make clean;

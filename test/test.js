@@ -3,7 +3,7 @@ const fs = require('fs');
 const almostEqual = require('almost-equal');
 const glpk = require('glpk');
 
-require('../glpk.js').then(glpkjs => {
+require('../dist/glpk.js').then(glpkjs => {
 
     tape('test LP/MIP & compare against native node-glpk', { timeout: 99999 }, t => {
         [

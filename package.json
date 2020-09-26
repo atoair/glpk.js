@@ -1,6 +1,6 @@
 {
   "name": "glpk.js",
-  "version": "3.2.0",
+  "version": "4.0.0",
   "description": "GLPK JS (emscripten) port for node & browser",
   "keywords": [
     "LP",
@@ -9,19 +9,22 @@
     "linear programming",
     "linear optimization"
   ],
-  "main": "glpk.js",
+  "main": "dist/glpk.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "build": "make all",
+    "build:glpk": "make glpk",
+    "build:js": "make dist/glpk.js dist/glpk-worker.js",
+    "clean": "make clean",
     "test": "node test/test.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jvail/glpk.js.git"
   },
-  "author": "jvail",
+  "author": "Jan Vaillant",
   "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/jvail/glpk.js/issues"

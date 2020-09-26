@@ -1,4 +1,4 @@
-require('../glpk.js').then(glpk => {
+require('../dist/glpk.js').then(glpk => {
 
 	let lp = {
 		name: 'MIP with binaries',
@@ -54,4 +54,3 @@ require('../glpk.js').then(glpk => {
 	);
 
 });
-
